@@ -13,8 +13,8 @@ object GhEvent {
 
   def main(args: Array[String]): Unit = {
 
-    if (args.length < 1) {
-      System.err.println("Usage: GhEvent <githubDataDirectory>")
+    if (args.length < 2) {
+      System.err.println("Usage: GhEvent <github Data Directory> <destination file>")
       System.exit(1)
     }
     val githubDataDirectory = args(0)
@@ -56,7 +56,9 @@ object GhEvent {
           "language" -> evLanguage)
     }
 
-    processedData.foreach(println)
+    processedData.saveAsTextFile(args(1))
+
+//    processedData.foreach(println)
 
 //    // Save to ES
 //    processedData.foreach(_.saveToEs("github/evinfo"))
