@@ -6,30 +6,32 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkContext, SparkConf}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods._
-//import org.elasticsearch.spark._
+import org.elasticsearch.spark._
 
 object GhEvent {
   implicit lazy val formats = DefaultFormats
 
   def main(args: Array[String]): Unit = {
 
-    if (args.length < 2) {
-      System.err.println("Usage: GhEvent <github Data Directory> <destination file>")
+    if (args.length < 3) {
+      System.err.println("Usage: GhEvent <github Data Directory> <ES ip> <ES port>")
       System.exit(1)
     }
     val githubDataDirectory = args(0)
 
+    // Spark configuration
     val defConf = new SparkConf(true)
     val sparkConf = defConf.setAppName("GhEvent").
       setMaster(defConf.get("spark.master",  "local[*]"))
 
-//    // ES configuration
-//    sparkConf.set("es.index.auto.create", "true")
-//    sparkConf.set("es.nodes","localhost")
-//    sparkConf.set("es.port","9200")
+    // ES configuration
+    sparkConf.set("es.index.auto.create", "true")
+    sparkConf.set("es.nodes",args(1))
+    sparkConf.set("es.port",args(2))
 
     val sc = new SparkContext(sparkConf)
     
+    // Dataset processing
     val data: RDD[String] = sc.textFile(githubDataDirectory + "/*").flatMap(_.split("\n"))
 
     val processedData = data.map {
@@ -56,12 +58,8 @@ object GhEvent {
           "language" -> evLanguage)
     }
 
-    processedData.saveAsTextFile(args(1))
-
-//    processedData.foreach(println)
-
-//    // Save to ES
-//    processedData.foreach(_.saveToEs("github/evinfo"))
+    // Save to ES
+    processedData.saveToEs("github/evinfo")
 
     sc.stop()
   }
