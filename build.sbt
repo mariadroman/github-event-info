@@ -6,7 +6,8 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= Seq(
       "org.json4s" %% "json4s-jackson" % "3.2.9",
       "org.apache.spark" %% "spark-core" % "1.4.1" % "provided",
-      "org.elasticsearch" %% "elasticsearch-spark" % "2.1.0"
+//      "org.elasticsearch" %% "elasticsearch-spark" % "2.1.0"
+      "org.elasticsearch" %% "elasticsearch-spark" % "2.2.0-beta1"
     )
   )
 
